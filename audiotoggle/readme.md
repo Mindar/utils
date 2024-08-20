@@ -5,7 +5,7 @@
 
 There are no arguments or configurable options. Simply download the script 
 
-`curl https://raw.githubusercontent.com/Mindar/utils/main/LICENSE > audiotoggle.sh`
+`curl https://raw.githubusercontent.com/Mindar/utils/main/audiotoggle/audiotoggle.sh > audiotoggle.sh`
 
 Then make it executable using `chmod +x audiotoggle.sh`
 
