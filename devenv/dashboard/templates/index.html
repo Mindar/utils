@@ -38,6 +38,41 @@
             margin-bottom: 20px;
         }
         
+        .tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        .tab:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .tab.active {
+            background: white;
+            color: #667eea;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
         .services-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -111,24 +146,6 @@
             background: #5a67d8;
         }
         
-        .btn-secondary {
-            background: #edf2f7;
-            color: #4a5568;
-        }
-        
-        .btn-secondary:hover {
-            background: #e2e8f0;
-        }
-        
-        .btn-accent {
-            background: #48bb78;
-            color: white;
-        }
-        
-        .btn-accent:hover {
-            background: #38a169;
-        }
-        
         .credentials {
             background: #f7fafc;
             border-radius: 6px;
@@ -167,6 +184,221 @@
             font-size: 0.7rem;
         }
         
+        /* Control Panel Styles */
+        .control-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .panel-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #2d3748;
+        }
+        
+        .refresh-btn {
+            padding: 8px 16px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        
+        .refresh-btn:hover {
+            background: #5a67d8;
+        }
+        
+        .containers-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .containers-table th,
+        .containers-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .containers-table th {
+            font-weight: 600;
+            color: #4a5568;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .containers-table tr:hover {
+            background: #f7fafc;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .status-running {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+        
+        .status-exited {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 6px;
+        }
+        
+        .action-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        
+        .action-btn-start {
+            background: #48bb78;
+            color: white;
+        }
+        
+        .action-btn-start:hover {
+            background: #38a169;
+        }
+        
+        .action-btn-stop {
+            background: #f56565;
+            color: white;
+        }
+        
+        .action-btn-stop:hover {
+            background: #e53e3e;
+        }
+        
+        .action-btn-restart {
+            background: #ed8936;
+            color: white;
+        }
+        
+        .action-btn-restart:hover {
+            background: #dd6b20;
+        }
+        
+        .action-btn-logs {
+            background: #667eea;
+            color: white;
+        }
+        
+        .action-btn-logs:hover {
+            background: #5a67d8;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #718096;
+        }
+        
+        .error {
+            background: #fed7d7;
+            color: #742a2a;
+            padding: 16px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        /* Logs Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-overlay.active {
+            display: flex;
+        }
+        
+        .modal {
+            background: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 1000px;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #2d3748;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #718096;
+        }
+        
+        .modal-close:hover {
+            color: #2d3748;
+        }
+        
+        .modal-body {
+            padding: 20px;
+            overflow: auto;
+            flex: 1;
+        }
+        
+        .logs-content {
+            background: #1a202c;
+            color: #e2e8f0;
+            padding: 16px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            white-space: pre-wrap;
+            max-height: 500px;
+            overflow: auto;
+        }
+        
         .footer {
             text-align: center;
             margin-top: 30px;
@@ -180,48 +412,224 @@
         <h1>🚀 DevEnv Dashboard</h1>
         <p class="subtitle">Your complete local development environment</p>
         
-        <div class="services-grid">
-            {% for name, service in services.items() %}
-            <div class="service-card">
-                <div class="service-header">
-                    <span class="service-icon">{{ service.icon }}</span>
-                    <h2 class="service-name">{{ name }}</h2>
-                </div>
-                
-                <p class="service-description">{{ service.description }}</p>
-                
-                <div class="service-links">
-                    {% if service.ui %}
-                    <a href="{{ service.ui }}" target="_blank" class="btn btn-primary">
-                        Open UI
-                    </a>
-                    {% endif %}
-                    
-                    {% if service.management_ui %}
-                    <a href="{{ service.management_ui }}" target="_blank" class="btn btn-accent">
-                        {{ service.management_ui_name|default('Manage') }}
-                    </a>
-                    {% endif %}
-                </div>
-                
-                {% if service.credentials %}
-                <div class="credentials">
-                    <div class="credentials-title">Credentials</div>
-                    {% for key, value in service.credentials.items() %}
-                    <div class="credential-item">
-                        <span class="credential-key">{{ key }}</span>
-                        <span class="credential-value">{{ value }}</span>
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('services')">Services</button>
+            <button class="tab" onclick="showTab('control')">Control Panel</button>
+        </div>
+        
+        <div id="services-tab" class="tab-content active">
+            <div class="services-grid">
+                {% for name, service in services.items() %}
+                <div class="service-card">
+                    <div class="service-header">
+                        <span class="service-icon">{{ service.icon }}</span>
+                        <h2 class="service-name">{{ name }}</h2>
                     </div>
-                    {% endfor %}
+                    
+                    <p class="service-description">{{ service.description }}</p>
+                    
+                    <div class="service-links">
+                        {% if service.ui %}
+                        <a href="{{ service.ui }}" target="_blank" class="btn btn-primary">
+                            Open UI
+                        </a>
+                        {% endif %}
+                    </div>
+                    
+                    {% if service.credentials %}
+                    <div class="credentials">
+                        <div class="credentials-title">Credentials</div>
+                        {% for key, value in service.credentials.items() %}
+                        <div class="credential-item">
+                            <span class="credential-key">{{ key }}</span>
+                            <span class="credential-value">{{ value }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
                 </div>
-                {% endif %}
+                {% endfor %}
             </div>
-            {% endfor %}
+        </div>
+        
+        <div id="control-tab" class="tab-content">
+            <div class="control-panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">Container Control</h2>
+                    <button class="refresh-btn" onclick="loadContainers(true)">Refresh</button>
+                </div>
+                <div id="containers-list">
+                    <div class="loading">Loading containers...</div>
+                </div>
+            </div>
         </div>
         
         <div class="footer">
             <p>DevEnv | All services running locally on Docker</p>
         </div>
     </div>
+    
+    <!-- Logs Modal -->
+    <div id="logs-modal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title" id="logs-title">Container Logs</h3>
+                <button class="modal-close" onclick="closeLogs()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="logs-content" class="logs-content">Loading logs...</div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function showTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(tabName + '-tab').classList.add('active');
+            
+            if (tabName === 'control') {
+                loadContainers();
+            }
+        }
+        
+        async function loadContainers(showLoading = false) {
+            const containerList = document.getElementById('containers-list');
+            
+            // Only show loading on initial load, not on auto-refresh
+            if (showLoading || containerList.children.length === 0) {
+                containerList.innerHTML = '<div class="loading">Loading containers...</div>';
+            }
+            
+            try {
+                const response = await fetch('/api/containers');
+                const containers = await response.json();
+                
+                if (containers.length === 0) {
+                    containerList.innerHTML = '<div class="loading">No containers found</div>';
+                    return;
+                }
+                
+                let html = '<table class="containers-table"><thead><tr>';
+                html += '<th>Container</th>';
+                html += '<th>Status</th>';
+                html += '<th>Uptime</th>';
+                html += '<th>Ports</th>';
+                html += '<th>Actions</th>';
+                html += '</tr></thead><tbody>';
+                
+                containers.forEach(container => {
+                    const statusClass = 'status-' + container.status;
+                    
+                    html += '<tr>';
+                    html += `<td><strong>${container.name.replace('devenv-', '')}</strong><br><small>${container.image}</small></td>`;
+                    html += `<td><span class="status-badge ${statusClass}">${container.status}</span></td>`;
+                    html += `<td>${container.uptime}</td>`;
+                    html += `<td><small>${container.ports.join(', ') || 'None'}</small></td>`;
+                    html += '<td>';
+                    html += '<div class="action-buttons">';
+                    
+                    if (container.status === 'running') {
+                        html += `<button class="action-btn action-btn-logs" onclick="showLogs('${container.name}')">Logs</button>`;
+                        html += `<button class="action-btn action-btn-restart" onclick="restartContainer('${container.name}')">Restart</button>`;
+                        html += `<button class="action-btn action-btn-stop" onclick="stopContainer('${container.name}')">Stop</button>`;
+                    } else {
+                        html += `<button class="action-btn action-btn-start" onclick="startContainer('${container.name}')">Start</button>`;
+                    }
+                    
+                    html += '</div>';
+                    html += '</td>';
+                    html += '</tr>';
+                });
+                
+                html += '</tbody></table>';
+                containerList.innerHTML = html;
+                
+            } catch (error) {
+                containerList.innerHTML = `<div class="error">Error loading containers: ${error.message}</div>`;
+            }
+        }
+        
+        async function startContainer(name) {
+            try {
+                const response = await fetch(`/api/containers/${name}/start`, { method: 'POST' });
+                const result = await response.json();
+                if (result.success) {
+                    loadContainers();
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+        
+        async function stopContainer(name) {
+            if (!confirm(`Stop ${name}?`)) return;
+            
+            try {
+                const response = await fetch(`/api/containers/${name}/stop`, { method: 'POST' });
+                const result = await response.json();
+                if (result.success) {
+                    loadContainers();
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+        
+        async function restartContainer(name) {
+            if (!confirm(`Restart ${name}?`)) return;
+            
+            try {
+                const response = await fetch(`/api/containers/${name}/restart`, { method: 'POST' });
+                const result = await response.json();
+                if (result.success) {
+                    loadContainers();
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+        
+        async function showLogs(name) {
+            document.getElementById('logs-modal').classList.add('active');
+            document.getElementById('logs-title').textContent = `Logs: ${name.replace('devenv-', '')}`;
+            document.getElementById('logs-content').textContent = 'Loading logs...';
+            
+            try {
+                const response = await fetch(`/api/containers/${name}/logs`);
+                const result = await response.json();
+                if (result.success) {
+                    document.getElementById('logs-content').textContent = result.logs || 'No logs available';
+                } else {
+                    document.getElementById('logs-content').textContent = 'Error: ' + result.error;
+                }
+            } catch (error) {
+                document.getElementById('logs-content').textContent = 'Error: ' + error.message;
+            }
+        }
+        
+        function closeLogs() {
+            document.getElementById('logs-modal').classList.remove('active');
+        }
+        
+        // Auto-refresh control panel every 10 seconds when visible
+        setInterval(() => {
+            if (document.getElementById('control-tab').classList.contains('active')) {
+                loadContainers(false); // Don't show loading on auto-refresh
+            }
+        }, 10000);
+    </script>
 </body>
 </html>

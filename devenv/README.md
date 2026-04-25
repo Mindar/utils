@@ -53,7 +53,7 @@ Once running, access all services through the **Dashboard** at http://localhost:
 | **Dashboard** | http://localhost:8080 | - | Service discovery & credentials UI |
 | **PostgreSQL** | localhost:5432 | admin/admin | PostgreSQL with pgvector extension |
 | **ClickHouse** | http://localhost:8123 | admin/admin | OLAP database |
-| **Valkey** | localhost:6379 | admin | Redis-compatible in-memory store |
+| **Valkey** | localhost:6379 | default/admin | Redis-compatible in-memory store |
 | **LLDAP** | http://localhost:17170 | admin | Lightweight LDAP server (backend: PostgreSQL) |
 | **Prometheus** | http://localhost:9090 | - | Metrics collection & alerting |
 | **Jaeger** | http://localhost:16686 | - | Distributed tracing |

@@ -73,7 +73,7 @@ services:
     restart: unless-stopped
     environment:
       LLDAP_JWT_SECRET: "REPLACE_WITH_RANDOM_JWT_SECRET_MIN_12_CHARS"
-      LLDAP_LDAP_USER_PASS: admin
+      LLDAP_LDAP_USER_PASS: password
       LLDAP_LDAP_BASE_DN: dc=local,dc=aal,dc=sh
       LLDAP_DATABASE_URL: "postgres://admin:admin@postgres/lldap?sslmode=disable"
       LLDAP_VERBOSE: "true"
@@ -349,8 +349,11 @@ services:
     restart: unless-stopped
     environment:
       - FLASK_ENV=development
+      - COMPOSE_PROJECT_NAME=devenv
     ports:
       - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
       - devenv
     depends_on:

@@ -1,7 +1,15 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, jsonify, request
+import docker
 import os
+from datetime import datetime
 
 app = Flask(__name__)
+
+# Get project name from environment
+PROJECT_NAME = os.environ.get('COMPOSE_PROJECT_NAME', 'devenv')
+
+# Initialize Docker client
+client = docker.from_env()
 
 # Services ordered as requested: dashboard, postgres, mailpit, valkey, grafana, prometheus, rest
 SERVICES = {
@@ -105,7 +113,7 @@ SERVICES = {
             "URL": "ldap://localhost:3890",
             "Web UI": "http://localhost:17170",
             "Base DN": "dc=local,dc=aal,dc=sh",
-            "Admin Password": "admin"
+            "Admin Password": "password"
         },
         "icon": "🔐"
     },
@@ -142,9 +150,111 @@ SERVICES = {
     }
 }
 
+
+def get_container_status():
+    """Get status of all devenv containers"""
+    containers = []
+    try:
+        all_containers = client.containers.list(all=True)
+        for container in all_containers:
+            # Only show containers from this project
+            if container.name.startswith(f"{PROJECT_NAME}-"):
+                status = container.status
+                health = "unknown"
+                
+                # Get health status if available
+                if container.attrs.get('State', {}).get('Health'):
+                    health = container.attrs['State']['Health']['Status']
+                
+                # Calculate uptime
+                uptime = "N/A"
+                if container.attrs.get('State', {}).get('StartedAt'):
+                    started = container.attrs['State']['StartedAt']
+                    if started != '0001-01-01T00:00:00Z':
+                        started_time = datetime.fromisoformat(started.replace('Z', '+00:00'))
+                        uptime_delta = datetime.now(started_time.tzinfo) - started_time
+                        hours = int(uptime_delta.total_seconds() // 3600)
+                        minutes = int((uptime_delta.total_seconds() % 3600) // 60)
+                        uptime = f"{hours}h {minutes}m"
+                
+                # Get ports
+                ports = []
+                for port, bindings in container.ports.items():
+                    if bindings:
+                        for binding in bindings:
+                            host_port = binding.get('HostPort', '')
+                            if host_port:
+                                ports.append(f"{host_port}->{port}")
+                
+                containers.append({
+                    'id': container.short_id,
+                    'name': container.name,
+                    'image': container.image.tags[0] if container.image.tags else 'unknown',
+                    'status': status,
+                    'health': health,
+                    'uptime': uptime,
+                    'ports': ports
+                })
+    except Exception as e:
+        print(f"Error getting containers: {e}")
+    
+    return containers
+
+
 @app.route("/")
 def index():
     return render_template("index.html", services=SERVICES)
+
+
+@app.route("/api/containers")
+def get_containers():
+    """API endpoint to get container status"""
+    return jsonify(get_container_status())
+
+
+@app.route("/api/containers/<container_name>/start", methods=["POST"])
+def start_container(container_name):
+    """Start a container"""
+    try:
+        container = client.containers.get(container_name)
+        container.start()
+        return jsonify({'success': True, 'message': f'Started {container_name}'})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route("/api/containers/<container_name>/stop", methods=["POST"])
+def stop_container(container_name):
+    """Stop a container"""
+    try:
+        container = client.containers.get(container_name)
+        container.stop(timeout=30)
+        return jsonify({'success': True, 'message': f'Stopped {container_name}'})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route("/api/containers/<container_name>/restart", methods=["POST"])
+def restart_container(container_name):
+    """Restart a container"""
+    try:
+        container = client.containers.get(container_name)
+        container.restart(timeout=30)
+        return jsonify({'success': True, 'message': f'Restarted {container_name}'})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route("/api/containers/<container_name>/logs")
+def get_logs(container_name):
+    """Get container logs"""
+    try:
+        container = client.containers.get(container_name)
+        logs = container.logs(tail=100, timestamps=True).decode('utf-8')
+        return jsonify({'success': True, 'logs': logs})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8080, debug=True)
