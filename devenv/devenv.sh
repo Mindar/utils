@@ -139,12 +139,14 @@ start() {
     echo "  🐘 PostgreSQL:    localhost:5432 (admin/admin)"
     echo "  🏠 ClickHouse:    http://localhost:8123 (admin/admin)"
     echo "  🔑 Valkey:        localhost:6379 (admin)"
-    echo "  🔐 LLDAP:         http://localhost:17170 (admin)"
+    echo "  🔮 Langfuse:      http://localhost:3050 (admin/admin)"
+    echo "  📦 MinIO:         http://localhost:9201 (admin/password)"
     echo "  📊 Prometheus:    http://localhost:9090"
     echo "  🔍 Jaeger:        http://localhost:16686"
     echo "  📈 Grafana:       http://localhost:3000 (admin/admin)"
     echo "  📋 Loki:          http://localhost:3100"
     echo "  📧 Mailpit:       http://localhost:8025"
+    echo "  🔐 LLDAP:         http://localhost:17170 (admin)"
     echo ""
 }
 

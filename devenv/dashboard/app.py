@@ -72,6 +72,31 @@ SERVICES = {
         },
         "icon": "📊"
     },
+    "Langfuse": {
+        "url": "http://localhost:3050",
+        "ui": "http://localhost:3050",
+        "description": "LLM observability and tracing platform",
+        "credentials": {
+            "URL": "http://localhost:3050",
+            "Email": "admin@local.aal.sh",
+            "Password": "password",
+            "Public Key": "pk-lf-dev-0000000000000000",
+            "Secret Key": "sk-lf-dev-00000000000000000000000000000000"
+        },
+        "icon": "🔮"
+    },
+    "MinIO": {
+        "url": "http://localhost:9201",
+        "ui": "http://localhost:9201",
+        "description": "S3-compatible object storage for Langfuse",
+        "credentials": {
+            "URL": "http://localhost:9201",
+            "S3 API": "localhost:9200",
+            "Username": "admin",
+            "Password": "password"
+        },
+        "icon": "📦"
+    },
     "LLDAP": {
         "url": "ldap://localhost:3890",
         "ui": "http://localhost:17170",
