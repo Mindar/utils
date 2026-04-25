@@ -1,0 +1,11 @@
+apiVersion: 1
+
+providers:
+  - name: 'devenv'
+    orgId: 1
+    folder: 'DevEnv'
+    type: file
+    disableDeletion: false
+    editable: true
+    options:
+      path: /var/lib/grafana/dashboards

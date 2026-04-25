@@ -1,0 +1,245 @@
+services:
+  # Core Infrastructure
+  postgres:
+    image: pgvector/pgvector:pg18-trixie
+    container_name: devenv-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: devenv
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+    volumes:
+      - postgres_data:/var/lib/postgresql
+      - ./init-scripts/postgres:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+    networks:
+      - devenv
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d devenv"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  clickhouse:
+    image: clickhouse/clickhouse-server:latest
+    container_name: devenv-clickhouse
+    restart: unless-stopped
+    environment:
+      CLICKHOUSE_DB: default
+      CLICKHOUSE_USER: admin
+      CLICKHOUSE_PASSWORD: admin
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+      - ./init-scripts/clickhouse:/docker-entrypoint-initdb.d
+    ports:
+      - "8123:8123"   # HTTP interface
+      - "9000:9000"   # Native protocol
+    networks:
+      - devenv
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+
+  valkey:
+    image: valkey/valkey:latest
+    container_name: devenv-valkey
+    restart: unless-stopped
+    command: valkey-server --requirepass admin
+    volumes:
+      - valkey_data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - devenv
+
+  # Identity Management
+  lldap:
+    image: lldap/lldap:latest
+    container_name: devenv-lldap
+    restart: unless-stopped
+    environment:
+      LLDAP_JWT_SECRET: "REPLACE_WITH_RANDOM_JWT_SECRET_MIN_12_CHARS"
+      LLDAP_LDAP_USER_PASS: admin
+      LLDAP_LDAP_BASE_DN: dc=local,dc=aal,dc=sh
+      LLDAP_DATABASE_URL: "postgres://admin:admin@postgres/lldap?sslmode=disable"
+      LLDAP_VERBOSE: "true"
+    ports:
+      - "3890:3890"   # LDAP port
+      - "17170:17170" # Web UI
+    networks:
+      - devenv
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # Database Management
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: devenv-pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@local.aal.sh
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    ports:
+      - "5050:80"
+    networks:
+      - devenv
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # Valkey Management
+  redisinsight:
+    image: redis/redisinsight:latest
+    container_name: devenv-redisinsight
+    restart: unless-stopped
+    volumes:
+      - redisinsight_data:/data
+    ports:
+      - "5540:5540"
+    networks:
+      - devenv
+    depends_on:
+      - valkey
+
+  # Monitoring & Observability
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: devenv-prometheus
+    restart: unless-stopped
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.enable-remote-write-receiver'
+    volumes:
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - devenv
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: devenv-jaeger
+    restart: unless-stopped
+    environment:
+      COLLECTOR_OTLP_ENABLED: "true"
+    ports:
+      - "16686:16686"  # UI
+      - "14268:14268"  # Jaeger HTTP receiver
+      - "14250:14250"  # gRPC receiver
+      - "4317:4317"    # OTLP gRPC
+      - "4318:4318"    # OTLP HTTP
+    networks:
+      - devenv
+
+  loki:
+    image: grafana/loki:latest
+    container_name: devenv-loki
+    restart: unless-stopped
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - ./config/loki-config.yaml:/etc/loki/local-config.yaml:ro
+      - loki_data:/loki
+    ports:
+      - "3100:3100"
+    networks:
+      - devenv
+
+  promtail:
+    image: grafana/promtail:latest
+    container_name: devenv-promtail
+    restart: unless-stopped
+    volumes:
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/log:/var/log:ro
+      - ./config/promtail-config.yaml:/etc/promtail/config.yml:ro
+    command: -config.file=/etc/promtail/config.yml
+    networks:
+      - devenv
+    depends_on:
+      - loki
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: devenv-grafana
+    restart: unless-stopped
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_INSTALL_PLUGINS: grafana-clock-panel,grafana-simple-json-datasource
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./config/grafana-datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml:ro
+      - ./config/grafana-dashboards.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml:ro
+      - ./config/dashboards:/var/lib/grafana/dashboards:ro
+    ports:
+      - "3000:3000"
+    networks:
+      - devenv
+    depends_on:
+      - prometheus
+      - loki
+      - jaeger
+
+  # Email Testing
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: devenv-mailpit
+    restart: unless-stopped
+    environment:
+      MP_DATA_FILE: /data/mailpit.db
+    volumes:
+      - mailpit_data:/data
+    ports:
+      - "8025:8025"   # Web UI
+      - "1025:1025"   # SMTP
+    networks:
+      - devenv
+
+  # DevEnv Dashboard WebApp
+  dashboard:
+    build:
+      context: ./dashboard
+      dockerfile: Dockerfile
+    container_name: devenv-dashboard
+    restart: unless-stopped
+    environment:
+      - FLASK_ENV=development
+    ports:
+      - "8080:8080"
+    networks:
+      - devenv
+    depends_on:
+      - postgres
+      - clickhouse
+      - valkey
+      - lldap
+      - prometheus
+      - jaeger
+      - grafana
+      - mailpit
+      - loki
+
+networks:
+  devenv:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  clickhouse_data:
+  valkey_data:
+  prometheus_data:
+  grafana_data:
+  loki_data:
+  mailpit_data:
+  pgadmin_data:
+  redisinsight_data:
